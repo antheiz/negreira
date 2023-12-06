@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Peta Kabupaten</title>
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/offline-exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/marker-clusters.js"></script>
+    <script src="https://code.highcharts.com/modules/coloraxis.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/accessibility.js"></script>
+    <style>
+        #container {
+            height: 600px;
+            min-width: 310px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container"></div>
+
+    <script>
+        let districts = {};
+        let companies = {};
+
+        async function loadAllMapData() {
+            try {
+                // Memuat data distrik dari API
+                const distrikResponse = await fetch('http://localhost:5000/api/districts');
+                // const distrikResponse = await fetch('https://code.highcharts.com/mapdata/custom/europe.topo.json');
+                districts = await distrikResponse.json();
+
+                // Memuat data perusahaan wajib pajak dari API
+                const companyResponse = await fetch('http://localhost:5000/api/companies');
+                // const companyResponse = await fetch('https://cdn.jsdelivr.net/gh/highcharts/highcharts@1e9e659c2d60fbe27ef0b41e2f93112dd68fb7a3/samples/data/european-train-stations-near-airports.json');
+                companies = await companyResponse.json();
+
+
+                // Inisialisasi peta dengan data yang dimuat
+                initializeChart();
+            } catch (error) {
+                console.error("Error loading map data: ", error);
+            }
+        }
+
+
+        function initializeChart() {
+            Highcharts.mapChart('container', {
+                chart: {
+                    map: districts
+                },
+                title: {
+                    text: 'Peta Kota Jayapura'
+                },
+                mapNavigation: {
+                    enabled: true
+                },
+                tooltip: {
+                    formatter: function () {
+                        if (this.point.clusteredData) {
+                            return 'Clustered points: ' + this.point.clusterPointsAmount;
+                        }
+                        return '<b>' + this.key + '</b><br>Lat: ' + this.point.lat.toFixed(2) + ', Lon: ' + this.point.lon.toFixed(2);
+                    }
+                },
+                colorAxis: {
+                    min: 0,
+                    max: 20
+                },
+                plotOptions: {
+                    map: {
+                        dataLabels: {
+                            enabled: true,
+                            format: '{point.properties.name}'
+                        }
+                    },
+                    mappoint: {
+                        cluster: {
+                            enabled: true,
+                            allowOverlap: false,
+                            animation: {
+                                duration: 450
+                            },
+                            layoutAlgorithm: {
+                                type: 'grid',
+                                gridSize: 70
+                            },
+                            zones: [{
+                                from: 1,
+                                to: 4,
+                                marker: {
+                                    radius: 13
+                                }
+                            }, {
+                                from: 5,
+                                to: 9,
+                                marker: {
+                                    radius: 15
+                                }
+                            }, {
+                                from: 10,
+                                to: 15,
+                                marker: {
+                                    radius: 17
+                                }
+                            }, {
+                                from: 16,
+                                to: 20,
+                                marker: {
+                                    radius: 19
+                                }
+                            }, {
+                                from: 21,
+                                to: 100,
+                                marker: {
+                                    radius: 21
+                                }
+                            }]
+                        }
+                    }
+                },
+                series: [{
+                    name: 'Basemap',
+                    borderColor: '#A0A0A0',
+                    nullColor: 'rgba(177, 244, 177, 0.5)',
+                    showInLegend: false
+                }, {
+                    type: 'mappoint',
+                    enableMouseTracking: true,
+                    colorKey: 'clusterPointsAmount',
+                    name: 'Cities',
+                    color: Highcharts.getOptions().colors[1],
+                    data: companies,
+                    marker: {
+                        lineWidth: 1,
+                        lineColor: '#fff',
+                        symbol: 'mapmarker',
+                        radius: 8
+                    },
+                }]
+            });
+        }
+
+        // Memulai proses memuat data
+        loadAllMapData();
+    </script>
+</body>
+
+</html>
