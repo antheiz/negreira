@@ -1,3 +1,4 @@
+```sql
 CREATE TABLE `kecamatan` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `nama_kecamatan` varchar(255) NOT NULL,
@@ -14,8 +15,9 @@ CREATE TABLE `kecamatan` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-
+```sql
 CREATE TABLE `kelurahan` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `kecamatan_id` bigint(20) UNSIGNED DEFAULT NULL,
@@ -33,9 +35,9 @@ CREATE TABLE `kelurahan` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
 
-
-
+```sql
 CREATE TABLE `perusahaan` (
   `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
   `kelurahan_id` bigint(20) UNSIGNED DEFAULT NULL,
@@ -51,7 +53,7 @@ CREATE TABLE `perusahaan` (
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+```
 
 ```sql
 INSERT INTO perusahaan (kelurahan_id, nama_perusahaan, alamat, latitude, longitude)
